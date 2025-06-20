@@ -1,0 +1,4 @@
+streamlit
+pymupdf
+ibm-watsonx-ai
+pandas
