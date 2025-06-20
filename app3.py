@@ -16,9 +16,10 @@ from ibm_watsonx_ai.foundation_models import ModelInference
 
 # 🔐 IBM watsonx Credentials (Inline)
 client = APIClient({
-    "url": "https://us-south.ml.cloud.ibm.com",  # Change if using a different region
-    "apikey": "1WunJpdymADx4r6MTUyWzQZVtducjdILvwkJGRKbBn3t"             # ← Replace with your actual IBM API key
+    "url": "https://us-south.ml.cloud.ibm.com",
+    "apikey": st.secrets["apikey"]
 })
+
 
 
 
