@@ -4,6 +4,7 @@ import pandas as pd
 from ibm_watsonx_ai.client import APIClient
 from ibm_watsonx_ai.foundation_models import ModelInference
 
+# PDF 提取
 def extract_text_from_pdf(pdf_file):
     text = ""
     with fitz.open(stream=pdf_file.read(), filetype="pdf") as doc:
@@ -11,6 +12,7 @@ def extract_text_from_pdf(pdf_file):
             text += page.get_text()
     return text
 
+# 表格与文本读取
 def extract_text_from_file(file):
     if file.name.endswith('.pdf'):
         return extract_text_from_pdf(file)
@@ -22,6 +24,7 @@ def extract_text_from_file(file):
         return file.read().decode("utf-8", errors="ignore")
     return df.to_string(index=False)
 
+# 初始化 IBM Watsonx 模型
 def init_model(apikey):
     client = APIClient({
         "url": "https://us-south.ml.cloud.ibm.com",
@@ -34,6 +37,7 @@ def init_model(apikey):
         params={"max_new_tokens": 800}
     )
 
+# 翻译函数（修复了 f-string）
 def translate_text(text, target_lang, model):
     lang_map = {
         "Chinese": "中文",
@@ -42,8 +46,6 @@ def translate_text(text, target_lang, model):
     }
     if target_lang == "English":
         return text
-    prompt = f"Please translate the following text into {lang_map.get(target_lang, target_lang)}:
-
-{text}"
+    prompt = f"Please translate the following text into {lang_map.get(target_lang, target_lang)}:\n\n{text}"
     result = model.generate(prompt=prompt)
     return result["results"][0]["generated_text"]
