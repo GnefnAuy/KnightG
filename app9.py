@@ -4,8 +4,9 @@ from utils_multilang import extract_text_from_file, init_model, translate_text
 
 st.set_page_config(page_title="KnightG · Global Application Advisor", layout="centered")
 
-# 语言切换
+# 语言选择和是否翻译
 lang = st.selectbox("🌐 Language", ["English", "Chinese", "German", "Spanish"])
+translate = st.checkbox("🌐 Translate output", value=(lang != "English"))
 
 st.title("🎓 KnightG · Global Application Advisor")
 
@@ -30,6 +31,10 @@ def handle_tab(tab, prompt_instruction, key_prefix):
                 st.warning("Please upload a file or enter text.")
                 st.stop()
 
+            if len(raw) > 1500:
+                st.warning("Your input is too long. Please shorten it to under 1500 characters.")
+                st.stop()
+
             model = init_model(st.secrets["apikey"])
 
             prompt = f"""{prompt_instruction}
@@ -38,14 +43,16 @@ User input:
 {raw}
 """
 
-            with st.spinner("Analyzing..."):
+            with st.spinner("🧠 Generating advice... please wait 10–20 seconds..."):
                 result = model.generate(prompt=prompt)
                 output = result["results"][0]["generated_text"]
 
-            translated = translate_text(output, lang, model)
+            if translate:
+                with st.spinner(f"🌐 Translating to {lang}..."):
+                    output = translate_text(output, lang, model)
 
             st.markdown("## 🌟 Recommendation")
-            st.markdown(translated)
+            st.markdown(output)
 
 handle_tab(tab1, 
     "You are a study abroad planning expert. Based on the user's description, recommend the most suitable countries (up to 3) and project types (e.g., research-based, practice-oriented, brand-driven). Use a refined and graceful tone.",
